@@ -1,0 +1,6 @@
+private static final String url = "jdbc:mysql://localhost:3306/DB_Name";
+private static final String user = "SQL_userName";
+private static final String password = "SQL_Password";
+
+
+Changed with Dynamic url;
