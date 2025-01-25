@@ -20,14 +20,10 @@ public class Guest {
     
 
     public Guest(int id, String guest_name, int room_number, String contact_number, LocalDateTime reservation_date) {
+        this(guest_name,room_number,contact_number); //Constructor Chaining 
         this.id = id;
-        this.guest_name = guest_name;
-        this.room_number = room_number;
-        this.contact_number = contact_number;
         this.reservation_date = reservation_date;
     }
-
-
 
     public int getId() {
         return id;
@@ -72,7 +68,7 @@ public class Guest {
     @Override
     public String toString() {
         return "Guest [id=" + id + ", guest_name=" + guest_name + ", room_number=" + room_number + ", contact_number="
-                + contact_number + ", reservation_date=" + reservation_date + "]";
+                + contact_number + ", reservation_date=" + reservation_date.toLocalDate() + "]";
     }
 
 }

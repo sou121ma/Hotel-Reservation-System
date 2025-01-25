@@ -17,17 +17,16 @@ public class ServiceP {
     Connection con;
 
     public ServiceP() {
-        con = ConnectionProvider.creaConnection();
+        ConnectionProvider p = new ConnectionProvider();
+        con = p.creaConnection();
     }
 
-    // Reserving room : inserting data in data base
+    // Reserving room : inserting data in database
     public boolean reserveRoom(Guest g) {
-        boolean status = false;
 
         String q = "INSERT INTO reservations(guest_name,room_number,contact_number) VALUES(?,?,?)";
 
         try {
-
             PreparedStatement pst = con.prepareStatement(q);
             pst.setString(1, g.getGuest_name());
             pst.setInt(2, g.getRoom_number());
@@ -41,7 +40,7 @@ public class ServiceP {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return status;
+        return false;
     }
 
     // view reservation list - working for case 2
@@ -73,20 +72,15 @@ public class ServiceP {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-
         return guests;
-
     }
 
     // Getting the room number by guest ID
     public int getRoomNumber(int id) {
-
         int roomNumber = -1;
-
         String query = "SELECT room_number FROM reservations WHERE reservation_id = ?";
 
         try {
-
             PreparedStatement pst = con.prepareStatement(query);
             pst.setInt(1, id);
             ResultSet rs = pst.executeQuery();
@@ -94,7 +88,6 @@ public class ServiceP {
             if (rs.next()) {
                 roomNumber = rs.getInt("room_number");
             }
-
             rs.close();
             pst.close();
         } catch (SQLException e) {
@@ -104,10 +97,8 @@ public class ServiceP {
     }
 
     // Updating reservation details
-
     public boolean updateReservation(int id, Guest g) {
         boolean status = false;
-        Connection con = ConnectionProvider.creaConnection();
         String query = "UPDATE reservations SET guest_name = ?, room_number = ?, contact_number = ? WHERE reservation_id = ?";
 
         try {
@@ -119,8 +110,8 @@ public class ServiceP {
 
             int rowsAffected = pst.executeUpdate();
             status = rowsAffected > 0;
-
             pst.close();
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -130,7 +121,6 @@ public class ServiceP {
     // Deleting a reservation
     public boolean deleteReservation(int id) {
         boolean status = false;
-        Connection con = ConnectionProvider.creaConnection();
         String query = "DELETE FROM reservations WHERE reservation_id = ?";
 
         try {
@@ -154,4 +144,26 @@ public class ServiceP {
             e.printStackTrace();
         }
     }
+
+    public boolean checkById(int id) {
+        int roomNumber = getRoomNumber(id);
+        return roomNumber == -1;
+    }
+
+    public boolean checkRoomNumber(int room_number) {
+        int count = 0;
+        String query = "select count(guest_name) from reservations where room_number =?";
+
+        try (PreparedStatement pst = con.prepareStatement(query)) {
+            pst.setInt(1, room_number);
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) {
+               count = rs.getInt(1);
+            }
+        } catch (SQLException e) {    
+            e.printStackTrace();
+        }
+        return count > 0;
+    }
+
 }
